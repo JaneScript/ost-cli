@@ -3,6 +3,10 @@ const basePath = path.resolve(__dirname, '../');
 
 const devMode = process.env.NODE_ENV !== 'production';
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const svgDirs = [
+  require.resolve('antd-mobile').replace(/warn\.js$/,''),
+  // path.resolve(__dirname,'src/my-project-svg-folder')//自己的svg目录
+];
 
 module.exports = {
   entry: {
@@ -43,11 +47,21 @@ module.exports = {
         // 'sass-loader',
       ],
     }, {
-      test: /\.(png|svg|jpg|gif)$/,
+      test: /\.(jpe?g|png|gif)(\?.+)?$/,
       use: [
-        'file-loader'
+        {
+          loader:'url-loader',
+          options:{
+            limit:8192
+          }
+        }
       ]
-    }]
+    },{
+      test:/\.(svg)$/i,
+      loader:'svg-sprite',
+      include:svgDirs
+    }
+    ]
   },
   recordsPath: path.join(basePath, 'records.json'),
   optimization: {
